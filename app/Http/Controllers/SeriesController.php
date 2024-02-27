@@ -19,6 +19,6 @@ class SeriesController extends Controller
         }
         $html .= '</ul>';
 
-        return $html;
+        return view('listar-series',compact('series'));
     }
 }
