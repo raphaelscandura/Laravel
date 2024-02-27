@@ -7,10 +7,14 @@ use App\Models\Serie;
 
 class SeriesController extends Controller
 {
-    public function index(){
+    public function index(Request $request){
         $series = Serie::all();
+        $mensagemSucesso = session('mensagem.sucesso');
 
-        return view('series.index')->with('series', $series);
+        return 
+            view('series.index')
+                ->with('series', $series)
+                ->with('mensagemSucesso', $mensagemSucesso);
     }
 
     public function create(){
@@ -18,12 +22,25 @@ class SeriesController extends Controller
     }
 
     public function store(Request $request){
-        $nomeSerie = $request->input('nome');
+        $serie = Serie::create($request->all());
 
-        $serie = new Serie();
-        $serie->nome = $nomeSerie;
-        $serie->save();       
+        return to_route('series.index')->with('mensagem.sucesso', "Série '{$serie->nome}' adicionada com sucesso");
+    }
 
-        return redirect('/series');
+    public function destroy(Serie $series){        
+        $series->delete();        
+
+        return to_route('series.index')->with('mensagem.sucesso', "Série '{$series->nome}' removida com sucesso");
+    }
+
+    public function edit(Serie $series){
+        return view("series.edit")->with("serie", $series);
+    }
+
+    public function update(Request $request,Serie $series){
+        $series->fill($request->all());
+        $series->save();
+        
+        return to_route('series.index')->with('mensagem.sucesso', "Série '{$series->nome}' atualizada com sucesso para '{$request->nome}'");
     }
 }
